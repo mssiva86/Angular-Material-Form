@@ -1,21 +1,176 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
 
-<router-outlet></router-outlet>
+<mat-toolbar color="primary">
+  <span class="title-center">Metadata Form</span> 
+  </mat-toolbar>
+ <ngx-loading [show]="loading" [config]="{backdropBorderRadius : '14px'}"></ngx-loading>
+<div *ngIf="isDataLoaded">
+<mat-card class="card">
+  <mat-card-title></mat-card-title>
+  <mat-card-content>
+<div class="flex-container"
+     fxLayout
+      fxLayout.xs="column"
+      fxLayoutGap.xs="0">
+  <div class="flex-item-avoid-overlap">
+      <mat-form-field>
+          <mat-select placeholder="Authored By" [formControl]="authorsControl" matTooltip="{{getToolTipSingleValueData(authorsControl)}}" >
+            <mat-option *ngFor="let author of authors" [value]="author">{{author.description}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+  </div>
+  <div class="flex-item-avoid-overlap">
+      <mat-form-field>
+          <mat-select placeholder="Industry" [formControl]="industriesControl"  matTooltip="{{getToolTipSingleValueData(industriesControl)}}" >
+            <mat-option *ngFor="let industry of industries"  [value]="industry"   >{{industry.description}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+  </div>
+  <div class="flex-item-avoid-overlap">
+      <mat-form-field>
+          <mat-select placeholder="Product" [formControl]="productsControl"   matTooltip="{{getToolTipSingleValueData(productsControl)}}" >
+            <mat-option *ngFor="let product of products" [value]="product" >{{product.description}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+  </div>
+  <div class="flex-item-avoid-overlap">
+      <mat-form-field class="autocomplete-governingbody-class">
+          <input type="text" name="governingbody" placeholder="Governing Body" aria-label="Governing Body" matInput [formControl]="governingBodiesControl"   [matAutocomplete]="governing">
+            <mat-autocomplete #governing="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let governingBody of filteredGoverningBodies | async" 
+               [value]="governingBody" matTooltip="{{governingBody.description}}" >{{governingBody.description}}</mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+  </div>
+  </div>
+  </mat-card-content>
+</mat-card>
+<mat-card class="card">
+    <mat-card-content>
+  <div class="flex-container"
+       fxLayout
+        fxLayout.xs="column"
+        fxLayoutGap.xs="0">
+    <div class="flex-item-avoid-overlap">
+        <mat-form-field>
+            <input type="text" placeholder="Content Type" aria-label="Content Type" matInput [formControl]="contentTypesControl"   [matAutocomplete]="contenttype">
+            <mat-autocomplete #contenttype="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let contentType of filteredContentTypes | async" 
+               [value]="contentType">{{contentType.description}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+    </div>
+    <div class="flex-item-avoid-overlap">
+        <mat-form-field class="autocomplete-contentsubtype-class">
+            <input type="text" placeholder="Content Sub Types" aria-label="Content Sub Types" matInput [formControl]="contentSubTypesControl"   [matAutocomplete]="contentsubtype">
+            <mat-autocomplete #contentsubtype="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let contentSubType of filteredContentSubTypes | async" 
+               [value]="contentSubType">{{contentSubType.description}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+    </div>
+    <div class="flex-item-avoid-overlap">
+        <mat-form-field>
+            <input type="text" placeholder="Geography" aria-label="Geography" matInput [formControl]="geographyControl"  [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let geography of filteredGeographies | async" [value]="geography">{{geography.description}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+    </div>
+    <div class="flex-item-avoid-overlap">
+        <mat-form-field>
+            <input type="text" placeholder="Template Type" aria-label="Template Type" matInput [formControl]="templateTypeControl"  [matAutocomplete]="templatetype">
+            <mat-autocomplete #templatetype="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let templateType of filteredTemplateTypes | async" [value]="templateType">{{templateType.description}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+    </div>
+    </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="card">
+    <mat-card-content>
+      <div class="flex-container"
+      fxLayout
+      fxLayout.xs="row"
+      fxLayoutAlign="center"
+      fxLayoutGap.xs="0">
+      <div  class="flex-item" fxFlex="20%">
+          <mat-form-field  class="mat-multi-select-class" >
+              <mat-select placeholder="Areas" [formControl]="areasControl" matTooltip="{{getToolTipData(areasControl)}}"  multiple>
+                  <mat-select-trigger>
+                     {{displayFirstValue(areasControl.value)}}
+                      <span *ngIf="areasControl.value?.length > 1" class="multiple-additional-selection">
+                        (+{{areasControl.value.length - 1}} {{areasControl.value?.length === 2 ? 'other' : 'others'}})
+                      </span>
+                    </mat-select-trigger>
+                <mat-option *ngFor="let area of areas" [value]="area" >{{area.description}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+    </div>
+    <div  class="flex-item" fxFlex="20%" >
+      <mat-form-field >
+          <input matInput name="effectiveDate" [matDatepicker]="effectiveDate" [formControl]="effectiveDateControl"  placeholder="Effective Date">
+          <mat-datepicker-toggle matSuffix [for]="effectiveDate"></mat-datepicker-toggle>
+          <mat-datepicker #effectiveDate></mat-datepicker>
+        </mat-form-field>
+  </div>
+  <div class="flex-item-right" fxFlex="10%">
+    <label for="promoted">Promoted    </label>
+  </div>
+  <div class="flex-item" fxFlex="10%" >
+  <mat-radio-group  [formControl] = "promotedControl">
+      <mat-radio-button value="1">Yes</mat-radio-button>
+      <mat-radio-button value="0">No</mat-radio-button>
+  </mat-radio-group>
+  </div>
+    </div>
+    </mat-card-content>
+  </mat-card>
+<mat-card class="card">
+    <mat-card-content>
+ 
+  <div class="flex-container"
+  fxLayout
+  fxLayout.xs="column"
+  fxLayoutAlign="center"
+  fxLayoutGap="0.5%"
+  fxLayoutGap.xs="0" >
+  <div class="flex-item" fxFlex="20%">
+    <mat-form-field class="mat-multi-select-class" >
+        <mat-select placeholder="Sub Areas" [formControl]="subAreasControl" matTooltip="{{getToolTipData(subAreasControl)}}" multiple>
+            <mat-select-trigger>
+                {{displayFirstValue(subAreasControl.value)}}
+                 <span *ngIf="subAreasControl.value?.length > 1" class="multiple-additional-selection">
+                   (+{{subAreasControl.value.length - 1}} {{subAreasControl.value?.length === 2 ? 'other' : 'others'}})
+                 </span>
+               </mat-select-trigger>
+          <mat-option *ngFor="let subarea of subAreas" [value]="subarea">{{subarea.description}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+</div>
+  
+    <div class="flex-item" fxFlex="20%">
+        <mat-form-field>
+            <input matInput name="purgeDate" [matDatepicker]="purgeDate" [formControl]="purgeDateControl" placeholder="Purge Date">
+            <mat-datepicker-toggle matSuffix [for]="purgeDate"></mat-datepicker-toggle>
+            <mat-datepicker #purgeDate></mat-datepicker>
+          </mat-form-field>
+    </div>
+
+    <div class="flex-item-right" fxFlex="10%">
+        <label for="mandatory">Mandatory    </label>
+    </div>
+    <div class="flex-item" fxFlex="10%">
+        <mat-radio-group  [formControl] = "mandatoryControl">
+            <mat-radio-button value="1">Yes</mat-radio-button>
+            <mat-radio-button value="0">No</mat-radio-button>
+        </mat-radio-group>
+    
+    </div>
+</div>
+
+</mat-card-content>
+</mat-card>
+
+
+</div>
