@@ -116,9 +116,7 @@ export class AppComponent implements OnInit {
     console.log("===" + xmlApp.Selection.Range);
   }
 
-  getXml(){
-    window.alert("I am getting called");
-  }
+  
 
   // Get data from the rest API
    getResults() {
