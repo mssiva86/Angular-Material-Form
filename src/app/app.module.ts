@@ -15,6 +15,7 @@ import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 
 import {DataService} from './services/dataservice';
 import {HttpClientModule} from '@angular/common/http';
+import { Helperclass } from './Class/helperclass';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {HttpClientModule} from '@angular/common/http';
     ReactiveFormsModule,
     NgxLoadingModule.forRoot({})
   ],
-  providers: [DataService],
+  providers: [DataService,
+   Helperclass],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

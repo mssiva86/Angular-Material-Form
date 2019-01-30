@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { Options } from './Interface/response';
 import { catchError, map, startWith, debounce, switchMap, debounceTime } from 'rxjs/operators';
 import { Alert } from 'selenium-webdriver';
+import { Helperclass } from './Class/helperclass';
 
 
 
@@ -37,9 +38,23 @@ export class AppComponent implements OnInit {
   public promotedControl = new FormControl();
   public mandatoryControl = new FormControl();
 
+  private xmetalArea;
+  private xmetalSubarea;
+  private xmetalCitations;
+  private xmetalContentSubtype;
+  private xmetalContentType;
+  private xmetalGeography;
+  private xmetalGoverningbody;
+  private xmetalIndustries;
+  private xmetalMandatory;
+  private xmetalProduct;
+  private xmetalPromoted;
+  private xmetalTemplatetype;
+  private xmetalAuthor;
+
 
   //Values from XMETAL
-  private attrArea: any = [];
+  private attrArea;
   private attrSubarea;
   private attrCitations;
   private attrContentSubtype;
@@ -83,7 +98,7 @@ export class AppComponent implements OnInit {
   public filteredContentSubTypes : Observable<Options[]>;
   public filteredTemplateTypes : Observable<Options[]>;
 
-  constructor (private api: DataService) {
+  constructor (private api: DataService,private helper : Helperclass) {
 
    }
 
@@ -113,7 +128,9 @@ export class AppComponent implements OnInit {
     this.attrProduct = xmlApp.Selection.ContainerNode.getAttribute("product");
     this.attrPurgedate = xmlApp.Selection.ContainerNode.getAttribute("purgedate");
     this.attrTemplatetype = xmlApp.Selection.ContainerNode.getAttribute("templatetype");
-    console.log("===" + xmlApp.Selection.Range);
+
+  //set Hidden input values to get used in xmetal
+    this.setHiddenValues();
   }
 
   
@@ -137,33 +154,39 @@ export class AppComponent implements OnInit {
       this.contentSubTypes = results[11];
       this.contentTypes = results[12];
       this.geographies = results[13];
+      
+
       this.isDataLoaded = true;
       this.loading = false;
       //call to set the selected value based on xmetal app values
-      this.setSingleSeletedValue(this.attrAuthor,this.authorsControl,this.authors);
-      this.setSingleSeletedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
-      this.setSingleSeletedValue(this.attrIndustries,this.industriesControl,this.industries);
-      this.setSingleSeletedValue(this.attrProduct,this.productsControl,this.products);
-      this.setSingleSeletedValue(this.attrContentType,this.contentTypesControl,this.contentTypes);
-      this.setSingleSeletedValue(this.attrContentSubtype,this.contentSubTypesControl,this.contentSubTypes);
-      this.setSingleSeletedValue(this.attrGeography,this.geographyControl,this.geographies);
-      this.setSingleSeletedValue(this.attrTemplatetype,this.templateTypeControl,this.templateTypes);
+      this.helper.setSingleSeletedValue(this.attrAuthor,this.authorsControl,this.authors);
+      this.helper.setSingleSeletedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
+      this.helper.setSingleSeletedValue(this.attrIndustries,this.industriesControl,this.industries);
+      this.helper.setSingleSeletedValue(this.attrProduct,this.productsControl,this.products);
+      this.helper.setSingleSeletedValue(this.attrContentType,this.contentTypesControl,this.contentTypes);
+      this.helper.setSingleSeletedValue(this.attrContentSubtype,this.contentSubTypesControl,this.contentSubTypes);
+      this.helper.setSingleSeletedValue(this.attrGeography,this.geographyControl,this.geographies);
+      this.helper.setSingleSeletedValue(this.attrTemplatetype,this.templateTypeControl,this.templateTypes);
+
+      
+     
 
       //call to set the multiple selection field based on xmetal App values 
-      this.setMultipleSelectedValue(this.attrArea,this.areasControl,this.areas);
-      this.setMultipleSelectedValue(this.attrSubarea,this.subAreasControl,this.subAreas);
+      this.helper.setMultipleSelectedValue(this.attrArea,this.areasControl,this.areas);
+      this.helper.setMultipleSelectedValue(this.attrSubarea,this.subAreasControl,this.subAreas);
 
       //set existing value for data fields from xmetal app.
-      this.setDateFieldValue(this.attrEffectivedate,this.effectiveDateControl);
-      this.setDateFieldValue(this.attrPurgedate,this.purgeDateControl);
+      this.helper.setDateFieldValue(this.attrEffectivedate,this.effectiveDateControl);
+      this.helper.setDateFieldValue(this.attrPurgedate,this.purgeDateControl);
 
       //set boolean values from xmetal app.
-      this.setBooleanFieldValue(this.attrPromoted,this.promotedControl);
-      this.setBooleanFieldValue(this.attrMandatory,this.mandatoryControl);
+      this.helper.setBooleanFieldValue(this.attrPromoted,this.promotedControl);
+      this.helper.setBooleanFieldValue(this.attrMandatory,this.mandatoryControl);
 
      
     }); 
   } 
+
 
 
   
@@ -173,39 +196,34 @@ autoCompleteSearchFn(){
   this.filteredGeographies = this.geographyControl.valueChanges.pipe(
     startWith<string | Options>(''),
     map(value => typeof value === 'string' ? value : value.description),
-    map(description => this._filter(description,this.geographies))
+    map(description => this.helper._filter(description,this.geographies))
   );
 
   this.filteredGoverningBodies = this.governingBodiesControl.valueChanges.pipe(
     startWith<string | Options>(''),
     map(value => typeof value === 'string' ? value : value.description),
-    map(description => this._filter(description,this.governingBodies))
+    map(description => this.helper._filter(description,this.governingBodies))
   );
 
   this.filteredContentTypes = this.contentTypesControl.valueChanges.pipe(
     startWith<string | Options>(''),
     map(value => typeof value === 'string' ? value : value.description),
-    map(description => this._filter(description,this.contentTypes))
+    map(description => this.helper._filter(description,this.contentTypes))
   );
 
   this.filteredContentSubTypes = this.contentSubTypesControl.valueChanges.pipe(
     startWith<string | Options>(''),
     map(value => typeof value === 'string' ? value : value.description),
-    map(description => this._filter(description,this.contentSubTypes))
+    map(description => this.helper._filter(description,this.contentSubTypes))
   );
 
   this.filteredTemplateTypes = this.templateTypeControl.valueChanges.pipe(startWith<string | Options>(''),
   map(value => typeof value === 'string' ? value : value.description),
-  map(description => this._filter(description,this.templateTypes))
+  map(description => this.helper._filter(description,this.templateTypes))
   );
 
 }
 
-// Filter the results set based on the typed value from select box 
-  private _filter(description : string,resultset : Options[]) : Options[] {
-    const filtervalue = description.toLowerCase();
-  return resultset.filter( option => option.description.toLowerCase().includes(filtervalue));
-  }
 
   // Display the description of the result set object. 
   displayFn(option? : Options) : string | undefined {
@@ -213,45 +231,42 @@ autoCompleteSearchFn(){
   }
 
 
-// Set boolean field values from XMETAL APP.
-setBooleanFieldValue(xmlAttr : string, currentFormControl : FormControl) {
-   if(xmlAttr)
-     currentFormControl.setValue(xmlAttr);
+
+
+
+
+//This fun will set values from xmetal to the hidden input values to later assign back to xmetal
+setHiddenValues(){
+  if(this.attrArea)
+      this.xmetalArea = this.attrArea;
+  if(this.attrSubarea)
+      this.xmetalSubarea = this.attrSubarea;
+  if(this.attrCitations)
+      this.xmetalCitations = this.attrCitations;
+  if(this.attrContentSubtype)
+      this.xmetalContentSubtype = this.attrContentSubtype;
+  if(this.attrContentType)
+      this.xmetalContentType = this.attrContentType;
+  if(this.attrGeography)
+    this.xmetalGeography = this.attrGeography;
+  if(this.attrGoverningbody)
+    this.xmetalGoverningbody = this.attrGoverningbody;
+  if(this.attrIndustries)
+    this.xmetalIndustries = this.attrIndustries;
+  if(this.attrMandatory)
+  this.xmetalMandatory = this.attrMandatory;
+  if(this.attrProduct)
+  this.xmetalProduct = this.attrProduct;
+  if(this.attrPromoted)
+    this.xmetalPromoted = this.attrPromoted;
+  if(this.attrTemplatetype)
+    this.xmetalTemplatetype = this.attrTemplatetype;
+  if(this.attrAuthor)
+      this.xmetalAuthor = this.attrAuthor;
 }
 
-//Set date on date fields with the dates from XMETAL App.
-setDateFieldValue(xmetalAttr : string, currentFormControl : FormControl){
-  if(xmetalAttr){
-    var selectedDate = new Date(xmetalAttr);
-    currentFormControl.setValue(selectedDate);
-  }
-}  
 
 
-// Set Seleted value for multi select field with the values from XMETAL App.
-setMultipleSelectedValue(xmetalAttr : string, currentFormControl : FormControl , resultSet : any[]){
-
-  let selectedValueArrayObj: any = [];  
-   if(xmetalAttr){
-      let arrString = xmetalAttr.split(" ");
-     selectedValueArrayObj = arrString.map( res => {
-        return resultSet.find(o => o.id == res);
-     });
-     currentFormControl.setValue(selectedValueArrayObj);
-   }
-   
-}
-
-
-//set selected value on the web App with values from xmetal app
-setSingleSeletedValue(xmetalAttr : string, currentFormControl : FormControl ,resultSet : any[] )
-{
-   if(xmetalAttr)
-   {
-     let selectObj = resultSet.find( o => o.id == xmetalAttr);
-     currentFormControl.setValue(selectObj);
-   }
-}
 // Show  selected values as tool tip for multi select fields
           getToolTipData(data){
             var result = data.value;
@@ -271,6 +286,34 @@ setSingleSeletedValue(xmetalAttr : string, currentFormControl : FormControl ,res
             }
           }
   
+// Set hidden field values with Mat Select field to get used in the XMETAL with  getElementById()
+  setValueForXmetal(data,attr){
+     var result = data.value;
+     console.log(result + " : " + attr);
+     if(result){
+        if(attr == "author")
+            this.xmetalAuthor = result.id;
+        else if(attr == "industry")
+            this.xmetalIndustries = result.id;
+        else if(attr == "product")
+            this.xmetalProduct = result.id;
+        else if(attr == "promoted")
+            this.xmetalPromoted = result;
+        else if(attr == "mandatory")
+            this.xmetalMandatory = result;
+     }
+  }
+
+  // set hidden field value of multiple Mat Select to get used in the XMETAL with getElementById()
+  setMultiValueForXmetalFields(data,attr){
+    var arrObj = data.value;
+    var ids = arrObj.map(i => i.id).join(" ");
+    if(attr == "subarea")
+      this.xmetalSubarea = ids;
+    else if(attr == "area")
+      this.xmetalArea = ids;
+  }
+
   // Method used to display first value as trigger element in multi select field along with +1,+2 options 
   displayFirstValue(value){
     if(value){

@@ -13,28 +13,31 @@
       fxLayoutGap.xs="0">
   <div class="flex-item-avoid-overlap">
       <mat-form-field>
-          <mat-select placeholder="Authored By" [formControl]="authorsControl" matTooltip="{{getToolTipSingleValueData(authorsControl)}}" >
+          <mat-select name="author" id="author" placeholder="Authored By" 
+          (selectionChange)="setValueForXmetal(authorsControl,'author')" [formControl]="authorsControl" matTooltip="{{getToolTipSingleValueData(authorsControl)}}" >
             <mat-option *ngFor="let author of authors" [value]="author">{{author.description}}</mat-option>
           </mat-select>
         </mat-form-field>
   </div>
   <div class="flex-item-avoid-overlap">
       <mat-form-field>
-          <mat-select placeholder="Industry" [formControl]="industriesControl"  matTooltip="{{getToolTipSingleValueData(industriesControl)}}" >
+          <mat-select id="industry" placeholder="Industry" 
+          (selectionChange)="setValueForXmetal(industriesControl,'industry')"  [formControl]="industriesControl"  matTooltip="{{getToolTipSingleValueData(industriesControl)}}" >
             <mat-option *ngFor="let industry of industries"  [value]="industry"   >{{industry.description}}</mat-option>
           </mat-select>
         </mat-form-field>
   </div>
   <div class="flex-item-avoid-overlap">
       <mat-form-field>
-          <mat-select placeholder="Product" [formControl]="productsControl"   matTooltip="{{getToolTipSingleValueData(productsControl)}}" >
+          <mat-select id="product" placeholder="Product" [formControl]="productsControl"  
+          (selectionChange)="setValueForXmetal(productsControl,'product')"  matTooltip="{{getToolTipSingleValueData(productsControl)}}" >
             <mat-option *ngFor="let product of products" [value]="product" >{{product.description}}</mat-option>
           </mat-select>
         </mat-form-field>
   </div>
   <div class="flex-item-avoid-overlap">
       <mat-form-field class="autocomplete-governingbody-class">
-          <input type="text" name="governingbody" placeholder="Governing Body" aria-label="Governing Body" matInput [formControl]="governingBodiesControl"   [matAutocomplete]="governing">
+          <input type="text" id="governing" name="governingbody" placeholder="Governing Body" aria-label="Governing Body" matInput [formControl]="governingBodiesControl"   [matAutocomplete]="governing">
             <mat-autocomplete #governing="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let governingBody of filteredGoverningBodies | async" 
                [value]="governingBody" matTooltip="{{governingBody.description}}" >{{governingBody.description}}</mat-option>
@@ -52,7 +55,7 @@
         fxLayoutGap.xs="0">
     <div class="flex-item-avoid-overlap">
         <mat-form-field>
-            <input type="text" placeholder="Content Type" aria-label="Content Type" matInput [formControl]="contentTypesControl"   [matAutocomplete]="contenttype">
+            <input type="text" id="contenttype" placeholder="Content Type" aria-label="Content Type" matInput [formControl]="contentTypesControl"   [matAutocomplete]="contenttype">
             <mat-autocomplete #contenttype="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let contentType of filteredContentTypes | async" 
                [value]="contentType">{{contentType.description}}</mat-option>
@@ -61,7 +64,7 @@
     </div>
     <div class="flex-item-avoid-overlap">
         <mat-form-field class="autocomplete-contentsubtype-class">
-            <input type="text" placeholder="Content Sub Types" aria-label="Content Sub Types" matInput [formControl]="contentSubTypesControl"   [matAutocomplete]="contentsubtype">
+            <input type="text" id="contentsubtype" placeholder="Content Sub Types" aria-label="Content Sub Types" matInput [formControl]="contentSubTypesControl"   [matAutocomplete]="contentsubtype">
             <mat-autocomplete #contentsubtype="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let contentSubType of filteredContentSubTypes | async" 
                [value]="contentSubType">{{contentSubType.description}}</mat-option>
@@ -70,15 +73,15 @@
     </div>
     <div class="flex-item-avoid-overlap">
         <mat-form-field>
-            <input type="text" placeholder="Geography" aria-label="Geography" matInput [formControl]="geographyControl"  [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <input type="text" id="geography" placeholder="Geography" aria-label="Geography" matInput [formControl]="geographyControl"  [matAutocomplete]="geography">
+            <mat-autocomplete #geography="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let geography of filteredGeographies | async" [value]="geography">{{geography.description}}</mat-option>
             </mat-autocomplete>
           </mat-form-field>
     </div>
     <div class="flex-item-avoid-overlap">
         <mat-form-field>
-            <input type="text" placeholder="Template Type" aria-label="Template Type" matInput [formControl]="templateTypeControl"  [matAutocomplete]="templatetype">
+            <input type="text" id="templatetype" placeholder="Template Type" aria-label="Template Type" matInput [formControl]="templateTypeControl"  [matAutocomplete]="templatetype">
             <mat-autocomplete #templatetype="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let templateType of filteredTemplateTypes | async" [value]="templateType">{{templateType.description}}</mat-option>
             </mat-autocomplete>
@@ -96,20 +99,21 @@
       fxLayoutGap.xs="0">
       <div  class="flex-item" fxFlex="20%">
           <mat-form-field  class="mat-multi-select-class" >
-              <mat-select placeholder="Areas" [formControl]="areasControl" matTooltip="{{getToolTipData(areasControl)}}"  multiple>
-                  <mat-select-trigger>
+              <mat-select  id="area" placeholder="Areas" [formControl]="areasControl" 
+              (selectionChange)="setMultiValueForXmetalFields(areasControl,'area')"  matTooltip="{{getToolTipData(areasControl)}}"  multiple>
+                 <mat-select-trigger>
                      {{displayFirstValue(areasControl.value)}}
                       <span *ngIf="areasControl.value?.length > 1" class="multiple-additional-selection">
                         (+{{areasControl.value.length - 1}} {{areasControl.value?.length === 2 ? 'other' : 'others'}})
                       </span>
-                    </mat-select-trigger>
+                    </mat-select-trigger>  
                 <mat-option *ngFor="let area of areas" [value]="area" >{{area.description}}</mat-option>
               </mat-select>
             </mat-form-field>
     </div>
     <div  class="flex-item" fxFlex="20%" >
       <mat-form-field >
-          <input matInput name="effectiveDate" [matDatepicker]="effectiveDate" [formControl]="effectiveDateControl"  placeholder="Effective Date">
+          <input matInput name="effectiveDate" id="effectiveDate" [matDatepicker]="effectiveDate" [formControl]="effectiveDateControl"  placeholder="Effective Date">
           <mat-datepicker-toggle matSuffix [for]="effectiveDate"></mat-datepicker-toggle>
           <mat-datepicker #effectiveDate></mat-datepicker>
         </mat-form-field>
@@ -118,7 +122,7 @@
     <label for="promoted">Promoted    </label>
   </div>
   <div class="flex-item" fxFlex="10%" >
-  <mat-radio-group  [formControl] = "promotedControl">
+  <mat-radio-group  id="promoted" (change)="setValueForXmetal(promotedControl,'promoted')" [formControl] = "promotedControl">
       <mat-radio-button value="1">Yes</mat-radio-button>
       <mat-radio-button value="0">No</mat-radio-button>
   </mat-radio-group>
@@ -137,13 +141,14 @@
   fxLayoutGap.xs="0" >
   <div class="flex-item" fxFlex="20%">
     <mat-form-field class="mat-multi-select-class" >
-        <mat-select placeholder="Sub Areas" [formControl]="subAreasControl" matTooltip="{{getToolTipData(subAreasControl)}}" multiple>
-            <mat-select-trigger>
+        <mat-select id="subarea" placeholder="Sub Areas" [formControl]="subAreasControl"
+        (selectionChange)="setMultiValueForXmetalFields(subAreasControl,'subarea')"  matTooltip="{{getToolTipData(subAreasControl)}}" multiple>
+        <mat-select-trigger>
                 {{displayFirstValue(subAreasControl.value)}}
                  <span *ngIf="subAreasControl.value?.length > 1" class="multiple-additional-selection">
                    (+{{subAreasControl.value.length - 1}} {{subAreasControl.value?.length === 2 ? 'other' : 'others'}})
                  </span>
-               </mat-select-trigger>
+               </mat-select-trigger> 
           <mat-option *ngFor="let subarea of subAreas" [value]="subarea">{{subarea.description}}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -151,7 +156,7 @@
   
     <div class="flex-item" fxFlex="20%">
         <mat-form-field>
-            <input matInput name="purgeDate" [matDatepicker]="purgeDate" [formControl]="purgeDateControl" placeholder="Purge Date">
+            <input matInput name="purgeDate" id="purgeDate" [matDatepicker]="purgeDate" [formControl]="purgeDateControl" placeholder="Purge Date">
             <mat-datepicker-toggle matSuffix [for]="purgeDate"></mat-datepicker-toggle>
             <mat-datepicker #purgeDate></mat-datepicker>
           </mat-form-field>
@@ -161,7 +166,7 @@
         <label for="mandatory">Mandatory    </label>
     </div>
     <div class="flex-item" fxFlex="10%">
-        <mat-radio-group  [formControl] = "mandatoryControl">
+        <mat-radio-group  id="mandatory"  (change)="setValueForXmetal(mandatoryControl,'mandatory')"  [formControl] = "mandatoryControl">
             <mat-radio-button value="1">Yes</mat-radio-button>
             <mat-radio-button value="0">No</mat-radio-button>
         </mat-radio-group>
@@ -171,6 +176,20 @@
 
 </mat-card-content>
 </mat-card>
+<div>
+  <input type="hidden" id="xmetalAuthor" [value]="xmetalAuthor" />
+  <input type="hidden" id="xmetalArea" [value]="xmetalArea" />
+  <input type="hidden" id="xmetalSubarea" [value]="xmetalSubarea" />
+  <input type="hidden" id="xmetalContentSubtype" [value]="xmetalContentSubtype" />
+  <input type="hidden" id="xmetalContentType" [value]="xmetalContentType" />
+  <input type="hidden" id="xmetalGeography" [value]="xmetalGeography" />
+  <input type="hidden" id="xmetalGoverningbody" [value]="xmetalGoverningbody" />
+  <input type="hidden" id="xmetalIndustries" [value]="xmetalIndustries" />
+  <input type="hidden" id="xmetalMandatory" [value]="xmetalMandatory" />
+  <input type="hidden" id="xmetalProduct" [value]="xmetalProduct" />
+  <input type="hidden" id="xmetalPromoted" [value]="xmetalPromoted" />
+  <input type="hidden" id="xmetalTemplatetype" [value]="xmetalTemplatetype" />
 
+</div>
 
 </div>
