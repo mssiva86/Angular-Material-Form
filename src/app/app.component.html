@@ -37,7 +37,8 @@
   </div>
   <div class="flex-item-avoid-overlap">
       <mat-form-field class="autocomplete-governingbody-class">
-          <input type="text" id="governing" name="governingbody" placeholder="Governing Body" aria-label="Governing Body" matInput [formControl]="governingBodiesControl"   [matAutocomplete]="governing">
+          <input type="text" id="governing" name="governingbody" placeholder="Governing Body" 
+          (ngModelChange)="setValueForXmetal(governingBodiesControl,'governing')" aria-label="Governing Body" matInput [formControl]="governingBodiesControl"   [matAutocomplete]="governing">
             <mat-autocomplete #governing="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let governingBody of filteredGoverningBodies | async" 
                [value]="governingBody" matTooltip="{{governingBody.description}}" >{{governingBody.description}}</mat-option>
@@ -55,7 +56,8 @@
         fxLayoutGap.xs="0">
     <div class="flex-item-avoid-overlap">
         <mat-form-field>
-            <input type="text" id="contenttype" placeholder="Content Type" aria-label="Content Type" matInput [formControl]="contentTypesControl"   [matAutocomplete]="contenttype">
+            <input type="text" id="contenttype" placeholder="Content Type"  matInput [formControl]="contentTypesControl" 
+            (ngModelChange)="setValueForXmetal(contentTypesControl,'contenttype')"  [matAutocomplete]="contenttype">
             <mat-autocomplete #contenttype="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let contentType of filteredContentTypes | async" 
                [value]="contentType">{{contentType.description}}</mat-option>
@@ -64,7 +66,8 @@
     </div>
     <div class="flex-item-avoid-overlap">
         <mat-form-field class="autocomplete-contentsubtype-class">
-            <input type="text" id="contentsubtype" placeholder="Content Sub Types" aria-label="Content Sub Types" matInput [formControl]="contentSubTypesControl"   [matAutocomplete]="contentsubtype">
+            <input type="text" id="contentsubtype" placeholder="Content Sub Types"  matInput [formControl]="contentSubTypesControl" 
+            (ngModelChange)="setValueForXmetal(contentSubTypesControl,'contentsubtype')"  [matAutocomplete]="contentsubtype">
             <mat-autocomplete #contentsubtype="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let contentSubType of filteredContentSubTypes | async" 
                [value]="contentSubType">{{contentSubType.description}}</mat-option>
@@ -73,7 +76,8 @@
     </div>
     <div class="flex-item-avoid-overlap">
         <mat-form-field>
-            <input type="text" id="geography" placeholder="Geography" aria-label="Geography" matInput [formControl]="geographyControl"  [matAutocomplete]="geography">
+            <input type="text" id="geography" placeholder="Geography" aria-label="Geography" matInput [formControl]="geographyControl"
+            (ngModelChange)="setValueForXmetal(geographyControl,'geography')"  [matAutocomplete]="geography">
             <mat-autocomplete #geography="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let geography of filteredGeographies | async" [value]="geography">{{geography.description}}</mat-option>
             </mat-autocomplete>
@@ -81,7 +85,8 @@
     </div>
     <div class="flex-item-avoid-overlap">
         <mat-form-field>
-            <input type="text" id="templatetype" placeholder="Template Type" aria-label="Template Type" matInput [formControl]="templateTypeControl"  [matAutocomplete]="templatetype">
+            <input type="text" id="templatetype" placeholder="Template Type" aria-label="Template Type" matInput [formControl]="templateTypeControl"
+            (ngModelChange)="setValueForXmetal(templateTypeControl,'templatetype')" [matAutocomplete]="templatetype">
             <mat-autocomplete #templatetype="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let templateType of filteredTemplateTypes | async" [value]="templateType">{{templateType.description}}</mat-option>
             </mat-autocomplete>

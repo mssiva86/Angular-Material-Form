@@ -301,6 +301,16 @@ setHiddenValues(){
             this.xmetalPromoted = result;
         else if(attr == "mandatory")
             this.xmetalMandatory = result;
+        else if(attr == "governing")
+            this.xmetalGoverningbody = result.id;
+        else if(attr == "contenttype")
+            this.xmetalContentType = result.id;
+        else if(attr == "contentsubtype")
+            this.xmetalContentSubtype = result.id;
+        else if(attr == "templatetype")
+            this.xmetalTemplatetype = result.id;
+        else if(attr == "geography")
+            this.xmetalGeography = result.id;
      }
   }
 
@@ -320,5 +330,9 @@ setHiddenValues(){
       if(value.length>0)
         return value[0].description;
     }
+  }
+
+
+  
   }
 }
