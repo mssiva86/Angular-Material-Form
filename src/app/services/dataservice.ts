@@ -4,12 +4,15 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Options } from '../Interface/response';
 
+import {environment} from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private endpoint = 'http://localhost:8080/api/';
+
+  private endpoint = environment.baseUrl;
   private httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'

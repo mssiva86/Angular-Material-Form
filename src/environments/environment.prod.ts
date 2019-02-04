@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  baseUrl : 'http://webtop.jjkeller.local:8090/smswebservice/api/'
 };

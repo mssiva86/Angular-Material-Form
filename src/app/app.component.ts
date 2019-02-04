@@ -155,6 +155,7 @@ export class AppComponent implements OnInit {
       this.contentTypes = results[12];
       this.geographies = results[13];
       
+    
 
       this.isDataLoaded = true;
       this.loading = false;
