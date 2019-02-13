@@ -36,19 +36,6 @@ export class DataService {
 
   } */
 
-  search(attribute: string,query : string) : Observable<Options>{
-     return this.http.get<Options>(this.endpoint + attribute,{
-          observe : 'response',
-          params : {
-            q : query
-          }
-      })
-      .pipe(
-          map(res => {
-              return res.body;
-          })
-      );
-  }
 
   getData(): Observable<any> {
     let areasRequest = this.http.get(this.endpoint + "areas").pipe(
