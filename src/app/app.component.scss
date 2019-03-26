@@ -28,6 +28,13 @@
     margin-top: 5px;
     text-align : center;
     line-height: 50px;
+
+}
+
+.flex-item-radio-button {
+    margin-top : 10px;
+    flex: 1 0 auto;
+    text-align: center;
 }
 
 .flex-item-right {
@@ -36,10 +43,10 @@
     line-height: 50px;
 }
 
-.mat-radio-button ~ .mat-radio-button {
+  .mat-radio-button ~ .mat-radio-button {
     margin-left: 16px;
-  }
-
+    margin-top: 15px;
+  } 
 
   
 .card {
@@ -76,7 +83,7 @@
     width: 100%;
 }
 
-.autocomplete-contentsubtype-class{
+.autocomplete-type-class{
     min-width: 100px;
     max-width: 200px;
     width: 100%;
@@ -91,4 +98,10 @@
 .multiple-additional-selection {
     opacity: 0.75;
     font-size: 0.75em;
+  }
+
+  .flex-item-radio-button{
+      display: flex;
+     flex-direction: column;
+
   }

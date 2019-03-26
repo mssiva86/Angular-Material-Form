@@ -13,6 +13,8 @@ export class DataService {
 
 
   private endpoint = environment.baseUrl;
+
+  
   private httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
@@ -38,23 +40,25 @@ export class DataService {
 
 
   getData(): Observable<any> {
+    console.log("Environment " + this.endpoint);
+    console.log("LEts see " + environment.baseUrl);
     let areasRequest = this.http.get(this.endpoint + "areas").pipe(
       map(this.extractData));
     let authorRequest = this.http.get(this.endpoint + "authors").pipe(map(this.extractData));
+    let languageRequest = this.http.get(this.endpoint + "languages").pipe(map(this.extractData));
     let governingRequest = this.http.get(this.endpoint + "governingBodies").pipe(map(this.extractData));
     let citationsRequest = this.http.get(this.endpoint + "citations").pipe(map(this.extractData));
     let filetypesRequest = this.http.get(this.endpoint + "fileTypes").pipe(map(this.extractData));
-    let geographyTypesRequest = this.http.get(this.endpoint + "geographyTypes").pipe(map(this.extractData));
     let industriesRequest = this.http.get(this.endpoint + "industries").pipe(map(this.extractData));
     let subAreasRequest = this.http.get(this.endpoint + "subAreas").pipe(map(this.extractData));
     let productRequest = this.http.get(this.endpoint + "products").pipe(map(this.extractData));
     let synonymsRequest = this.http.get(this.endpoint + "synonyms").pipe(map(this.extractData));
     let templateTypesRequest = this.http.get(this.endpoint + "templateTypes").pipe(map(this.extractData));
-    let contentSubTypesRequest = this.http.get(this.endpoint + "contentSubTypes").pipe(map(this.extractData));
+    let contentSubTypesRequest = this.http.get(this.endpoint + "types").pipe(map(this.extractData));
     let contentTypesRequest = this.http.get(this.endpoint + "contentTypes").pipe(map(this.extractData));
     let geographiesRequest = this.http.get(this.endpoint + "geographies").pipe(map(this.extractData));
-    return forkJoin([areasRequest, authorRequest, governingRequest, citationsRequest, filetypesRequest,
-      geographyTypesRequest, industriesRequest, subAreasRequest, productRequest, synonymsRequest, templateTypesRequest,
+    return forkJoin([authorRequest, languageRequest, areasRequest,governingRequest, citationsRequest, filetypesRequest,
+       industriesRequest, subAreasRequest, productRequest, synonymsRequest, templateTypesRequest,
       contentSubTypesRequest, contentTypesRequest, geographiesRequest]).pipe(catchError(error => of(error)));
   }  
 

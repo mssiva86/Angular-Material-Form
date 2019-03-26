@@ -21,15 +21,16 @@ declare var ActiveXObject: (type: string) => void;
 export class AppComponent implements OnInit {
   title = 'AMSMSMetaForm';
 
+  public authorsControl = new FormControl();
+  public languageControl = new FormControl();
   public isDataLoaded = false;
   public areasControl = new FormControl();
   public subAreasControl = new FormControl();
-  public authorsControl = new FormControl();
   public governingBodiesControl = new FormControl();
   public industriesControl = new FormControl();
   public productsControl = new FormControl();
   public contentTypesControl = new FormControl();
-  public contentSubTypesControl = new FormControl();
+  public typesControl = new FormControl();
   public geographyControl = new FormControl();
   public templateTypeControl = new FormControl();
   public citationsControl = new FormControl();
@@ -37,11 +38,14 @@ export class AppComponent implements OnInit {
   public purgeDateControl = new FormControl();
   public promotedControl = new FormControl();
   public mandatoryControl = new FormControl();
+  
 
+  private xmetalAuthor;
+  private xmetalLanguage;
   private xmetalArea;
   private xmetalSubarea;
   private xmetalCitations;
-  private xmetalContentSubtype;
+  private xmetalTypes;
   private xmetalContentType;
   private xmetalGeography;
   private xmetalGoverningbody;
@@ -50,14 +54,16 @@ export class AppComponent implements OnInit {
   private xmetalProduct;
   private xmetalPromoted;
   private xmetalTemplatetype;
-  private xmetalAuthor;
+  
 
 
   //Values from XMETAL
+  private attrAuthor;
+  private attrLanguage;
   private attrArea;
   private attrSubarea;
   private attrCitations;
-  private attrContentSubtype;
+  private attrType;
   private attrContentType;
   private attrEffectivedate;
   private attrGeography;
@@ -68,34 +74,33 @@ export class AppComponent implements OnInit {
   private attrPromoted;
   private attrPurgedate;
   private attrTemplatetype;
-  private attrAuthor;
+  
    
   // Property of the MAT Select 
-  private area = null;
-  public areas: any = [];
   public authors: any = [];
+  public languages: any = [];
+  public areas: any = [];
   public governingBodies: Options[];
   public citations: any = [];
   public fileTypes: any = [];
-  public goegraphyTypes: any = [];
   public industries: any = [];
   public subAreas: any = [];
   public products: any = [];
   public sysnonyms: any = [];
   public templateTypes: Options[];
-  public contentSubTypes: Options[];
+  public types: Options[];
   public contentTypes: Options[];
   public geographies: Options[];
   public loading = false;
 
   //values for mat select box
-  public author_select;
+  //public author_select;
   
 // propery for auto filtering select fields
   public filteredGeographies : Observable<Options[]>;
   public filteredGoverningBodies : Observable<Options[]>;
   public filteredContentTypes : Observable<Options[]>;
-  public filteredContentSubTypes : Observable<Options[]>;
+  public filteredTypes : Observable<Options[]>;
   public filteredTemplateTypes : Observable<Options[]>;
 
   constructor (private api: DataService,private helper : Helperclass) {
@@ -113,11 +118,12 @@ export class AppComponent implements OnInit {
   //Connect to XMETAL APP and read all the Metadata tag attribute values.
   connectToXmetal() {
      var xmlApp = new ActiveXObject("XMetaL.Application");
+    this.attrAuthor = xmlApp.Selection.ContainerNode.getAttribute("authoredby");
+    this.attrLanguage = xmlApp.Selection.ContainerNode.getAttribute("language");
     this.attrArea = xmlApp.Selection.ContainerNode.getAttribute("area");
     this.attrSubarea = xmlApp.Selection.ContainerNode.getAttribute("subarea");
-    this.attrAuthor = xmlApp.Selection.ContainerNode.getAttribute("authoredby");
     this.attrCitations = xmlApp.Selection.ContainerNode.getAttribute("citations");
-    this.attrContentSubtype = xmlApp.Selection.ContainerNode.getAttribute("contentsubtype");
+    this.attrType = xmlApp.Selection.ContainerNode.getAttribute("contentsubtype");
     this.attrContentType = xmlApp.Selection.ContainerNode.getAttribute("contenttype");
     this.attrEffectivedate = xmlApp.Selection.ContainerNode.getAttribute("effectivedate");
     this.attrGeography = xmlApp.Selection.ContainerNode.getAttribute("geography");
@@ -140,32 +146,33 @@ export class AppComponent implements OnInit {
 
     this.api.getData().subscribe(results => {
       // set the results of all the fields from forkjoin api call
-      this.areas = results[0];
-      this.authors = results[1];
-      this.governingBodies = results[2];
-      this.citations = results[3];
-      this.fileTypes = results[4];
-      this.goegraphyTypes = results[5];
+     
+      this.authors = results[0];
+      this.languages = results[1];
+      this.areas = results[2];
+      this.governingBodies = results[3];
+      this.citations = results[4];
+      this.fileTypes = results[5];
       this.industries = results[6];
       this.subAreas = results[7];
       this.products = results[8];
       this.sysnonyms = results[9];
       this.templateTypes = results[10];
-      this.contentSubTypes = results[11];
+      this.types = results[11];
       this.contentTypes = results[12];
       this.geographies = results[13];
-      
-    
 
+      
       this.isDataLoaded = true;
       this.loading = false;
       //call to set the selected value based on xmetal app values
       this.helper.setSingleSeletedValue(this.attrAuthor,this.authorsControl,this.authors);
+      this.helper.setSingleSeletedValue(this.attrLanguage,this.languageControl,this.languages);
       this.helper.setSingleSeletedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
       this.helper.setSingleSeletedValue(this.attrIndustries,this.industriesControl,this.industries);
       this.helper.setSingleSeletedValue(this.attrProduct,this.productsControl,this.products);
       this.helper.setSingleSeletedValue(this.attrContentType,this.contentTypesControl,this.contentTypes);
-      this.helper.setSingleSeletedValue(this.attrContentSubtype,this.contentSubTypesControl,this.contentSubTypes);
+      this.helper.setSingleSeletedValue(this.attrType,this.typesControl,this.types);
       this.helper.setSingleSeletedValue(this.attrGeography,this.geographyControl,this.geographies);
       this.helper.setSingleSeletedValue(this.attrTemplatetype,this.templateTypeControl,this.templateTypes);
 
@@ -212,10 +219,10 @@ autoCompleteSearchFn(){
     map(description => this.helper._filter(description,this.contentTypes))
   );
 
-  this.filteredContentSubTypes = this.contentSubTypesControl.valueChanges.pipe(
+  this.filteredTypes = this.typesControl.valueChanges.pipe(
     startWith<string | Options>(''),
     map(value => typeof value === 'string' ? value : value.description),
-    map(description => this.helper._filter(description,this.contentSubTypes))
+    map(description => this.helper._filter(description,this.types))
   );
 
   this.filteredTemplateTypes = this.templateTypeControl.valueChanges.pipe(startWith<string | Options>(''),
@@ -244,8 +251,8 @@ setHiddenValues(){
       this.xmetalSubarea = this.attrSubarea;
   if(this.attrCitations)
       this.xmetalCitations = this.attrCitations;
-  if(this.attrContentSubtype)
-      this.xmetalContentSubtype = this.attrContentSubtype;
+  if(this.attrType)
+      this.xmetalTypes = this.attrType;
   if(this.attrContentType)
       this.xmetalContentType = this.attrContentType;
   if(this.attrGeography)
@@ -306,8 +313,8 @@ setHiddenValues(){
             this.xmetalGoverningbody = result.id;
         else if(attr == "contenttype")
             this.xmetalContentType = result.id;
-        else if(attr == "contentsubtype")
-            this.xmetalContentSubtype = result.id;
+        else if(attr == "type")
+            this.xmetalTypes = result.id;
         else if(attr == "templatetype")
             this.xmetalTemplatetype = result.id;
         else if(attr == "geography")
