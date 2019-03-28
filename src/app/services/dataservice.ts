@@ -40,8 +40,6 @@ export class DataService {
 
 
   getData(): Observable<any> {
-    console.log("Environment " + this.endpoint);
-    console.log("LEts see " + environment.baseUrl);
     let areasRequest = this.http.get(this.endpoint + "areas").pipe(
       map(this.extractData));
     let authorRequest = this.http.get(this.endpoint + "authors").pipe(map(this.extractData));

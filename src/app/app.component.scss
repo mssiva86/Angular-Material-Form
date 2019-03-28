@@ -13,6 +13,12 @@
 }
 
 
+.flex-container-center-card{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: start;
+}
+
 @media all and (max-width : 800px){
     .flex-container {
         justify-content: flex-start;
@@ -79,7 +85,7 @@
 
 .autocomplete-governingbody-class{
     min-width: 100px;
-    max-width: 250px;
+    max-width: 500px;
     width: 100%;
 }
 

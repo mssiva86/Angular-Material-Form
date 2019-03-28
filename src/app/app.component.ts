@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import {DataService} from './services/dataservice';
 
 import {FormControl} from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Options } from './Interface/response';
-import { catchError, map, startWith, debounce, switchMap, debounceTime } from 'rxjs/operators';
-import { Alert } from 'selenium-webdriver';
+import { map, startWith } from 'rxjs/operators';
 import { Helperclass } from './Class/helperclass';
+import { citation } from './Interface/citation';
 
 
 
@@ -38,7 +38,9 @@ export class AppComponent implements OnInit {
   public purgeDateControl = new FormControl();
   public promotedControl = new FormControl();
   public mandatoryControl = new FormControl();
+ 
   
+
 
   private xmetalAuthor;
   private xmetalLanguage;
@@ -81,7 +83,7 @@ export class AppComponent implements OnInit {
   public languages: any = [];
   public areas: any = [];
   public governingBodies: Options[];
-  public citations: any = [];
+  public citations: citation[];
   public fileTypes: any = [];
   public industries: any = [];
   public subAreas: any = [];
@@ -91,17 +93,17 @@ export class AppComponent implements OnInit {
   public types: Options[];
   public contentTypes: Options[];
   public geographies: Options[];
+
+
   public loading = false;
+  public disabled = false;
 
   //values for mat select box
   //public author_select;
   
 // propery for auto filtering select fields
   public filteredGeographies : Observable<Options[]>;
-  public filteredGoverningBodies : Observable<Options[]>;
-  public filteredContentTypes : Observable<Options[]>;
   public filteredTypes : Observable<Options[]>;
-  public filteredTemplateTypes : Observable<Options[]>;
 
   constructor (private api: DataService,private helper : Helperclass) {
 
@@ -109,9 +111,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-    this.connectToXmetal();
+  //  this.connectToXmetal();
     this.getResults();
     this.autoCompleteSearchFn(); 
+    this.disableEnableControls(false);
 }
 
 
@@ -162,15 +165,12 @@ export class AppComponent implements OnInit {
       this.contentTypes = results[12];
       this.geographies = results[13];
 
-      
+     
       this.isDataLoaded = true;
       this.loading = false;
       //call to set the selected value based on xmetal app values
       this.helper.setSingleSeletedValue(this.attrAuthor,this.authorsControl,this.authors);
       this.helper.setSingleSeletedValue(this.attrLanguage,this.languageControl,this.languages);
-      this.helper.setSingleSeletedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
-      this.helper.setSingleSeletedValue(this.attrIndustries,this.industriesControl,this.industries);
-      this.helper.setSingleSeletedValue(this.attrProduct,this.productsControl,this.products);
       this.helper.setSingleSeletedValue(this.attrContentType,this.contentTypesControl,this.contentTypes);
       this.helper.setSingleSeletedValue(this.attrType,this.typesControl,this.types);
       this.helper.setSingleSeletedValue(this.attrGeography,this.geographyControl,this.geographies);
@@ -182,6 +182,9 @@ export class AppComponent implements OnInit {
       //call to set the multiple selection field based on xmetal App values 
       this.helper.setMultipleSelectedValue(this.attrArea,this.areasControl,this.areas);
       this.helper.setMultipleSelectedValue(this.attrSubarea,this.subAreasControl,this.subAreas);
+      this.helper.setMultipleSelectedValue(this.attrProduct,this.productsControl,this.products);
+      this.helper.setMultipleSelectedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
+      this.helper.setMultipleSelectedValue(this.attrIndustries,this.industriesControl,this.industries);
 
       //set existing value for data fields from xmetal app.
       this.helper.setDateFieldValue(this.attrEffectivedate,this.effectiveDateControl);
@@ -200,23 +203,11 @@ export class AppComponent implements OnInit {
   
 // This fun will get called for setting values based on user auto search on a field.
 autoCompleteSearchFn(){
-
+ 
   this.filteredGeographies = this.geographyControl.valueChanges.pipe(
     startWith<string | Options>(''),
     map(value => typeof value === 'string' ? value : value.description),
     map(description => this.helper._filter(description,this.geographies))
-  );
-
-  this.filteredGoverningBodies = this.governingBodiesControl.valueChanges.pipe(
-    startWith<string | Options>(''),
-    map(value => typeof value === 'string' ? value : value.description),
-    map(description => this.helper._filter(description,this.governingBodies))
-  );
-
-  this.filteredContentTypes = this.contentTypesControl.valueChanges.pipe(
-    startWith<string | Options>(''),
-    map(value => typeof value === 'string' ? value : value.description),
-    map(description => this.helper._filter(description,this.contentTypes))
   );
 
   this.filteredTypes = this.typesControl.valueChanges.pipe(
@@ -225,12 +216,9 @@ autoCompleteSearchFn(){
     map(description => this.helper._filter(description,this.types))
   );
 
-  this.filteredTemplateTypes = this.templateTypeControl.valueChanges.pipe(startWith<string | Options>(''),
-  map(value => typeof value === 'string' ? value : value.description),
-  map(description => this.helper._filter(description,this.templateTypes))
-  );
 
 }
+
 
 
   // Display the description of the result set object. 
@@ -286,6 +274,18 @@ setHiddenValues(){
               return msg;
             }
           }
+
+//Show selected values as tool tip for multi select Citations field
+          getToolTipForCFR(result){
+            if(result && result.length){
+              let msg = "";
+              result.forEach(res => {
+                msg+= res.cfrid + ';';
+              })
+              return msg;
+            }
+          }
+ 
 // Show selected values as tool tip for single select fields
           getToolTipSingleValueData(data){
             var result = data.value;
@@ -297,7 +297,6 @@ setHiddenValues(){
 // Set hidden field values with Mat Select field to get used in the XMETAL with  getElementById()
   setValueForXmetal(data,attr){
      var result = data.value;
-     console.log(result + " : " + attr);
      if(result){
         if(attr == "author")
             this.xmetalAuthor = result.id;
@@ -313,14 +312,34 @@ setHiddenValues(){
             this.xmetalGoverningbody = result.id;
         else if(attr == "contenttype")
             this.xmetalContentType = result.id;
-        else if(attr == "type")
-            this.xmetalTypes = result.id;
-        else if(attr == "templatetype")
-            this.xmetalTemplatetype = result.id;
         else if(attr == "geography")
             this.xmetalGeography = result.id;
      }
   }
+
+  /* Set values for Content types and template types based on the Type field selection by the user*/
+  setXmetalAndTypeRelatedFields(data){
+    var result = data.value;
+    console.log(result);
+    if(typeof result == 'object'){
+      console.log("Inside loop");
+            this.xmetalTypes = result.id;
+            let contentTypeObj = this.contentTypes.find( o => o.id == result.contentId);
+            let templateTypeObj = this.templateTypes.find( o => o.id == result.templateId );
+            this.contentTypesControl.setValue(contentTypeObj);
+            this.xmetalContentType = contentTypeObj.id;
+            this.templateTypeControl.setValue(templateTypeObj);
+            this.xmetalTemplatetype = templateTypeObj.id;
+    }
+    else{
+      this.contentTypesControl.setValue('');
+      this.xmetalContentType = '';
+      this.templateTypeControl.setValue('');
+      this.xmetalTemplatetype = '';
+    }
+  }
+
+
 
   // set hidden field value of multiple Mat Select to get used in the XMETAL with getElementById()
   setMultiValueForXmetalFields(data,attr){
@@ -332,6 +351,45 @@ setHiddenValues(){
       this.xmetalArea = ids;
   }
 
+   setMultivalues(arrObj){
+     return arrObj.map(i => i.id).join(" ");
+   }
+  // Set values for Topics,Area, Industry , Product and GoverningBodies automatically by selecting Citations
+  setXmetalAndCitationRelatedFields(data){
+    var result = data.value;
+    
+    this.xmetalCitations = this.setMultivalues(result);
+    let areasObjectArray : any = [];
+    let governingBodiesArray : any = [];
+    let industriesObjectArray : any = [];
+    let productsObjectArray : any = [];
+    let topicsObjectArray : any = [];
+
+    result.forEach( i => {
+
+      areasObjectArray.push(this.areas.find(o => o.id == i.areaId));
+      governingBodiesArray.push(this.governingBodies.find(g => g.id == i.governingBodyId));
+      industriesObjectArray.push(this.industries.find(s => s.id == i.industryId));
+      productsObjectArray.push(this.products.find(p => p.id == i.productId));
+      topicsObjectArray.push(this.subAreas.find(t => t.id == i.topicId));
+
+    });
+    this.areasControl.setValue(areasObjectArray);
+    this.governingBodiesControl.setValue(governingBodiesArray);
+    this.subAreasControl.setValue(topicsObjectArray);
+    this.industriesControl.setValue(industriesObjectArray);
+    this.productsControl.setValue(productsObjectArray);
+
+    this.xmetalArea = this.setMultivalues(areasObjectArray);
+    this.xmetalGoverningbody = this.setMultivalues(governingBodiesArray);
+    this.xmetalSubarea = this.setMultivalues(topicsObjectArray);
+    this.xmetalIndustries = this.setMultivalues(industriesObjectArray);
+    this.xmetalProduct = this.setMultivalues(productsObjectArray);
+    
+    
+  }
+ 
+ 
   // Method used to display first value as trigger element in multi select field along with +1,+2 options 
   displayFirstValue(value){
     if(value){
@@ -340,6 +398,33 @@ setHiddenValues(){
     }
   }
 
+//Method used to display first value as trigger element in multi select CFR Citation field along with +1,+2 options.
+  displayFirstValueForCFR(value){
+    if(value){
+      if(value.length > 0)
+      return value[0].cfrid;
+    }
+  }
 
+
+  disableEnableControls(value){
+    if(value){
+      this.governingBodiesControl.enable();
+      this.areasControl.enable();
+      this.subAreasControl.enable();
+      this.industriesControl.enable();
+      this.productsControl.enable(); 
+    }
+    else 
+    {
+      this.templateTypeControl.disable();
+      this.governingBodiesControl.disable();
+      this.areasControl.disable();
+      this.subAreasControl.disable();
+      this.industriesControl.disable();
+      this.productsControl.disable(); 
+      this.contentTypesControl.disable();
+    }
+  }
   
   }

@@ -6,9 +6,13 @@ export class Helperclass {
     // Filter the results set based on the typed value from select box 
   public _filter(description : string,resultset : Options[]) : Options[] {
     const filtervalue = description.toLowerCase();
-  return resultset.filter( option => option.description.toLowerCase().includes(filtervalue));
+     return resultset.filter( option => option.description.toLowerCase().includes(filtervalue));
   }
 
+  public _filterAutoComplete(result : Options,resultset : Options[]) : Options[] {
+    const filtervalue = result.description.toLowerCase();
+     return resultset.filter( option => option.description.toLowerCase().includes(filtervalue));
+  }
  
  // Set boolean field values from XMETAL APP.
 public setBooleanFieldValue(xmlAttr : string, currentFormControl : FormControl) {
