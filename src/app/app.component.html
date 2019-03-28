@@ -193,15 +193,15 @@
   fxLayoutGap.xs="0" >
         <div class="flex-item-avoid-overlap">
             <mat-form-field class="mat-multi-select-class" >
-                <mat-select id="subarea" placeholder="Sub Areas" [formControl]="subAreasControl"
-                (selectionChange)="setMultiValueForXmetalFields(subAreasControl,'subarea')"  matTooltip="{{getToolTipData(subAreasControl)}}" multiple >
+                <mat-select id="topic" placeholder="Topic(s)" [formControl]="topicsControl"
+                (selectionChange)="setMultiValueForXmetalFields(topicsControl,'topic')"  matTooltip="{{getToolTipData(topicsControl)}}" multiple >
                 <mat-select-trigger>
-                        {{displayFirstValue(subAreasControl.value)}}
-                        <span *ngIf="subAreasControl.value?.length > 1" class="multiple-additional-selection">
-                          (+{{subAreasControl.value.length - 1}} {{subAreasControl.value?.length === 2 ? 'other' : 'others'}})
+                        {{displayFirstValue(topicsControl.value)}}
+                        <span *ngIf="topicsControl.value?.length > 1" class="multiple-additional-selection">
+                          (+{{topicsControl.value.length - 1}} {{topicsControl.value?.length === 2 ? 'other' : 'others'}})
                         </span>
                       </mat-select-trigger> 
-                  <mat-option *ngFor="let subarea of subAreas" [value]="subarea">{{subarea.description}}</mat-option>
+                  <mat-option *ngFor="let topic of topics" [value]="topic">{{topic.description}}</mat-option>
                 </mat-select>
               </mat-form-field>
         </div>

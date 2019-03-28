@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   public languageControl = new FormControl();
   public isDataLoaded = false;
   public areasControl = new FormControl();
-  public subAreasControl = new FormControl();
+  public topicsControl = new FormControl();
   public governingBodiesControl = new FormControl();
   public industriesControl = new FormControl();
   public productsControl = new FormControl();
@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
   private xmetalAuthor;
   private xmetalLanguage;
   private xmetalArea;
-  private xmetalSubarea;
+  private xmetalTopics;
   private xmetalCitations;
   private xmetalTypes;
   private xmetalContentType;
@@ -63,7 +63,7 @@ export class AppComponent implements OnInit {
   private attrAuthor;
   private attrLanguage;
   private attrArea;
-  private attrSubarea;
+  private attrTopics;
   private attrCitations;
   private attrType;
   private attrContentType;
@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
   public citations: citation[];
   public fileTypes: any = [];
   public industries: any = [];
-  public subAreas: any = [];
+  public topics: any = [];
   public products: any = [];
   public sysnonyms: any = [];
   public templateTypes: Options[];
@@ -124,7 +124,7 @@ export class AppComponent implements OnInit {
     this.attrAuthor = xmlApp.Selection.ContainerNode.getAttribute("authoredby");
     this.attrLanguage = xmlApp.Selection.ContainerNode.getAttribute("language");
     this.attrArea = xmlApp.Selection.ContainerNode.getAttribute("area");
-    this.attrSubarea = xmlApp.Selection.ContainerNode.getAttribute("subarea");
+    this.attrTopics = xmlApp.Selection.ContainerNode.getAttribute("topics");
     this.attrCitations = xmlApp.Selection.ContainerNode.getAttribute("citations");
     this.attrType = xmlApp.Selection.ContainerNode.getAttribute("contentsubtype");
     this.attrContentType = xmlApp.Selection.ContainerNode.getAttribute("contenttype");
@@ -157,7 +157,7 @@ export class AppComponent implements OnInit {
       this.citations = results[4];
       this.fileTypes = results[5];
       this.industries = results[6];
-      this.subAreas = results[7];
+      this.topics = results[7];
       this.products = results[8];
       this.sysnonyms = results[9];
       this.templateTypes = results[10];
@@ -181,7 +181,7 @@ export class AppComponent implements OnInit {
 
       //call to set the multiple selection field based on xmetal App values 
       this.helper.setMultipleSelectedValue(this.attrArea,this.areasControl,this.areas);
-      this.helper.setMultipleSelectedValue(this.attrSubarea,this.subAreasControl,this.subAreas);
+      this.helper.setMultipleSelectedValue(this.attrTopics,this.topicsControl,this.topics);
       this.helper.setMultipleSelectedValue(this.attrProduct,this.productsControl,this.products);
       this.helper.setMultipleSelectedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
       this.helper.setMultipleSelectedValue(this.attrIndustries,this.industriesControl,this.industries);
@@ -235,8 +235,8 @@ autoCompleteSearchFn(){
 setHiddenValues(){
   if(this.attrArea)
       this.xmetalArea = this.attrArea;
-  if(this.attrSubarea)
-      this.xmetalSubarea = this.attrSubarea;
+  if(this.attrTopics)
+      this.xmetalTopics = this.attrTopics;
   if(this.attrCitations)
       this.xmetalCitations = this.attrCitations;
   if(this.attrType)
@@ -320,9 +320,8 @@ setHiddenValues(){
   /* Set values for Content types and template types based on the Type field selection by the user*/
   setXmetalAndTypeRelatedFields(data){
     var result = data.value;
-    console.log(result);
     if(typeof result == 'object'){
-      console.log("Inside loop");
+
             this.xmetalTypes = result.id;
             let contentTypeObj = this.contentTypes.find( o => o.id == result.contentId);
             let templateTypeObj = this.templateTypes.find( o => o.id == result.templateId );
@@ -346,7 +345,7 @@ setHiddenValues(){
     var arrObj = data.value;
     var ids = arrObj.map(i => i.id).join(" ");
     if(attr == "subarea")
-      this.xmetalSubarea = ids;
+      this.xmetalTopics = ids;
     else if(attr == "area")
       this.xmetalArea = ids;
   }
@@ -371,18 +370,18 @@ setHiddenValues(){
       governingBodiesArray.push(this.governingBodies.find(g => g.id == i.governingBodyId));
       industriesObjectArray.push(this.industries.find(s => s.id == i.industryId));
       productsObjectArray.push(this.products.find(p => p.id == i.productId));
-      topicsObjectArray.push(this.subAreas.find(t => t.id == i.topicId));
+      topicsObjectArray.push(this.topics.find(t => t.id == i.topicId));
 
     });
     this.areasControl.setValue(areasObjectArray);
     this.governingBodiesControl.setValue(governingBodiesArray);
-    this.subAreasControl.setValue(topicsObjectArray);
+    this.topicsControl.setValue(topicsObjectArray);
     this.industriesControl.setValue(industriesObjectArray);
     this.productsControl.setValue(productsObjectArray);
 
     this.xmetalArea = this.setMultivalues(areasObjectArray);
     this.xmetalGoverningbody = this.setMultivalues(governingBodiesArray);
-    this.xmetalSubarea = this.setMultivalues(topicsObjectArray);
+    this.xmetalTopics = this.setMultivalues(topicsObjectArray);
     this.xmetalIndustries = this.setMultivalues(industriesObjectArray);
     this.xmetalProduct = this.setMultivalues(productsObjectArray);
     
@@ -411,7 +410,7 @@ setHiddenValues(){
     if(value){
       this.governingBodiesControl.enable();
       this.areasControl.enable();
-      this.subAreasControl.enable();
+      this.topicsControl.enable();
       this.industriesControl.enable();
       this.productsControl.enable(); 
     }
@@ -420,7 +419,7 @@ setHiddenValues(){
       this.templateTypeControl.disable();
       this.governingBodiesControl.disable();
       this.areasControl.disable();
-      this.subAreasControl.disable();
+      this.topicsControl.disable();
       this.industriesControl.disable();
       this.productsControl.disable(); 
       this.contentTypesControl.disable();
