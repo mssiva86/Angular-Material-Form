@@ -107,7 +107,7 @@
         <div class="flex-item-avoid-overlap">
           <mat-form-field class="mat-multi-select-class" >
               <mat-select id="citations" placeholder="Citations" [formControl]="citationsControl"
-              (selectionChange)="setXmetalAndCitationRelatedFields(citationsControl)"  matTooltip="{{getToolTipForCFR(citationsControl.value)}}" multiple>
+              (selectionChange)="setXmetalAndCitationRelatedFields(citationsControl)" matTooltip="{{getToolTipForCFR(citationsControl.value)}}" multiple>
               <mat-select-trigger>
                       {{displayFirstValueForCFR(citationsControl.value)}}
                        <span *ngIf="citationsControl.value?.length > 1" class="multiple-additional-selection">
@@ -119,7 +119,7 @@
             </mat-form-field>
       </div>
       <div class="flex-item-avoid-overlap">
-         <mat-checkbox (change)="disableEnableControls($event.checked)">There are no Citations for this content</mat-checkbox>
+         <mat-checkbox (change)="disableEnableControls($event.checked)" [disabled]="checkboxDisabled">There are no Citations for this content</mat-checkbox>
       </div>
         </div>
     </mat-card-content>
@@ -163,7 +163,7 @@
           </mat-form-field>
     </div>
  <div class="flex-item-avoid-overlap">
-      <mat-form-field class="autocomplete-governingbody-class">
+      <mat-form-field class="autocomplete-biginput-class">
           <mat-select id="governing" placeholder="Governing Body" [formControl]="governingBodiesControl"  
             (selectionChange)="setValueForXmetal(governingBodiesControl,'governing')"  matTooltip="{{getToolTipData(governingBodiesControl)}}" multiple >
             <mat-select-trigger>
@@ -206,7 +206,7 @@
               </mat-form-field>
         </div>
         <div class="flex-item-avoid-overlap">
-            <mat-form-field class="mat-multi-select-class">
+            <mat-form-field class="autocomplete-biginput-class">
                 <mat-select id="industry" placeholder="Industry" 
                 (selectionChange)="setValueForXmetal(industriesControl,'industry')"  [formControl]="industriesControl"  
                 matTooltip="{{getToolTipData(industriesControl)}}" multiple>

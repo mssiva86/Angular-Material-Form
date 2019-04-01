@@ -7,6 +7,7 @@ import { Options } from './Interface/response';
 import { map, startWith } from 'rxjs/operators';
 import { Helperclass } from './Class/helperclass';
 import { citation } from './Interface/citation';
+import { ArrayClass } from './Class/ArrayClass';
 
 
 
@@ -97,6 +98,8 @@ export class AppComponent implements OnInit {
 
   public loading = false;
   public disabled = false;
+  public checkboxDisabled = false;
+  public citationDisabled = false;
 
   //values for mat select box
   //public author_select;
@@ -105,7 +108,8 @@ export class AppComponent implements OnInit {
   public filteredGeographies : Observable<Options[]>;
   public filteredTypes : Observable<Options[]>;
 
-  constructor (private api: DataService,private helper : Helperclass) {
+  constructor (private api: DataService,private helper : Helperclass,
+               private arrayClass : ArrayClass) {
 
    }
 
@@ -263,36 +267,6 @@ setHiddenValues(){
 
 
 
-// Show  selected values as tool tip for multi select fields
-          getToolTipData(data){
-            var result = data.value;
-            if(result && result.length){
-              let msg = "";
-              result.forEach(res => {
-                msg+= res.description + ';';
-              })
-              return msg;
-            }
-          }
-
-//Show selected values as tool tip for multi select Citations field
-          getToolTipForCFR(result){
-            if(result && result.length){
-              let msg = "";
-              result.forEach(res => {
-                msg+= res.cfrid + ';';
-              })
-              return msg;
-            }
-          }
- 
-// Show selected values as tool tip for single select fields
-          getToolTipSingleValueData(data){
-            var result = data.value;
-            if(result){
-              return result.description;
-            }
-          }
   
 // Set hidden field values with Mat Select field to get used in the XMETAL with  getElementById()
   setValueForXmetal(data,attr){
@@ -350,47 +324,136 @@ setHiddenValues(){
       this.xmetalArea = ids;
   }
 
-   setMultivalues(arrObj){
-     return arrObj.map(i => i.id).join(" ");
-   }
+
+   
+ 
+
+
   // Set values for Topics,Area, Industry , Product and GoverningBodies automatically by selecting Citations
   setXmetalAndCitationRelatedFields(data){
     var result = data.value;
     
-    this.xmetalCitations = this.setMultivalues(result);
+    if(result && result.length){
+  
+       this.checkboxDisabled = true;
+      // Set the xmetal value for citations
+    this.xmetalCitations = this.arrayClass.setMultivalues(result);
+    
     let areasObjectArray : any = [];
-    let governingBodiesArray : any = [];
+    let governingBodiesObjArray : any = [];
     let industriesObjectArray : any = [];
     let productsObjectArray : any = [];
     let topicsObjectArray : any = [];
 
-    result.forEach( i => {
+    let cfrareaArray : any = [];
+    let cfrgoverningBodiesArray : any = [];
+    let cfrindustriesArray : any = [];
+    let cfrproductArray : any = [];
+    let cfrTopicsArray : any = [];
 
-      areasObjectArray.push(this.areas.find(o => o.id == i.areaId));
-      governingBodiesArray.push(this.governingBodies.find(g => g.id == i.governingBodyId));
-      industriesObjectArray.push(this.industries.find(s => s.id == i.industryId));
-      productsObjectArray.push(this.products.find(p => p.id == i.productId));
-      topicsObjectArray.push(this.topics.find(t => t.id == i.topicId));
-
+    let listofIds = this.arrayClass.createArrayofIds(result);
+    this.api.getCFRRelatedIDs("cfrareas",listofIds).subscribe( cfrarea => {
+      this.loading = true;
+       cfrareaArray = Array.from(new Set(cfrarea));
+       cfrareaArray.forEach( areaId => {
+          areasObjectArray.push(this.areas.find(o => o.id == areaId));
+       });
+       this.areasControl.setValue(areasObjectArray);
+       this.xmetalArea = this.arrayClass.setMultivalues(areasObjectArray); 
+       this.loading  = false;
     });
-    this.areasControl.setValue(areasObjectArray);
-    this.governingBodiesControl.setValue(governingBodiesArray);
-    this.topicsControl.setValue(topicsObjectArray);
-    this.industriesControl.setValue(industriesObjectArray);
-    this.productsControl.setValue(productsObjectArray);
 
-    this.xmetalArea = this.setMultivalues(areasObjectArray);
-    this.xmetalGoverningbody = this.setMultivalues(governingBodiesArray);
-    this.xmetalTopics = this.setMultivalues(topicsObjectArray);
-    this.xmetalIndustries = this.setMultivalues(industriesObjectArray);
-    this.xmetalProduct = this.setMultivalues(productsObjectArray);
-    
-    
+    this.api.getCFRRelatedIDs("cfrgoverningbodies",listofIds).subscribe(cfrGovBody => {
+      this.loading = true;
+      cfrgoverningBodiesArray = Array.from(new Set(cfrGovBody));
+      cfrgoverningBodiesArray.forEach( govId => {
+        governingBodiesObjArray.push(this.governingBodies.find(o => o.id == govId));
+      });
+      this.governingBodiesControl.setValue(governingBodiesObjArray);
+      this.xmetalGoverningbody = this.arrayClass.setMultivalues(governingBodiesObjArray);
+      this.loading = false;
+    });
+
+    this.api.getCFRRelatedIDs("cfrindustries", listofIds).subscribe(cfrindustry => {
+      this.loading = true;
+      cfrindustriesArray = Array.from(new Set(cfrindustry));
+      cfrindustriesArray.forEach( indId => {
+        industriesObjectArray.push(this.industries.find( o=> o.id == indId));
+      });
+
+      this.industriesControl.setValue(industriesObjectArray);
+      this.xmetalIndustries = this.arrayClass.setMultivalues(industriesObjectArray);
+      this.loading = false;
+    })
+
+    this.api.getCFRRelatedIDs("cfrproducts", listofIds).subscribe(cfrproduct => {
+      this.loading = true;
+      cfrproductArray = Array.from(new Set(cfrproduct));
+      cfrproductArray.forEach( prdId => {
+        productsObjectArray.push(this.products.find(o => o.id == prdId));
+      });
+
+      this.productsControl.setValue(productsObjectArray);
+      this.xmetalProduct = this.arrayClass.setMultivalues(productsObjectArray);
+      this.loading = false;
+    })
+
+
+    this.api.getCFRRelatedIDs("cfrtopics", listofIds).subscribe( cfrtopic => {
+      this.loading = true;
+      cfrTopicsArray = Array.from(new Set(cfrtopic));
+      cfrTopicsArray.forEach( topicId => {
+          topicsObjectArray.push(this.topics.find( o=> o.id == topicId));
+      });
+      this.topicsControl.setValue(topicsObjectArray);
+      this.xmetalTopics = this.arrayClass.setMultivalues(topicsObjectArray);
+      this.loading = false;
+    })
+
+  }
+  else{
+    this.areasControl.setValue('');
+    this.xmetalArea = '';
+    this.governingBodiesControl.setValue('');
+    this.xmetalGoverningbody = '';
+    this.industriesControl.setValue('');
+    this.xmetalIndustries = '';
+    this.productsControl.setValue('');
+    this.xmetalProduct = '';
+    this.topicsControl.setValue('');
+    this.xmetalTopics = '';
+    this.checkboxDisabled = false;
+  }
   }
  
  
-  // Method used to display first value as trigger element in multi select field along with +1,+2 options 
-  displayFirstValue(value){
+ 
+
+// Based on Citations selection/ Citation Check box selection, enable/disable Areas,Topics,Industries,Governing Bodies and Industries.
+  disableEnableControls(value){
+    if(value){
+      this.governingBodiesControl.enable();
+      this.areasControl.enable();
+      this.topicsControl.enable();
+      this.industriesControl.enable();
+      this.productsControl.enable();
+      this.citationsControl.disable();
+    }
+    else 
+    {
+      this.templateTypeControl.disable();
+      this.governingBodiesControl.disable();
+      this.areasControl.disable();
+      this.topicsControl.disable();
+      this.industriesControl.disable();
+      this.productsControl.disable(); 
+      this.contentTypesControl.disable();
+      this.citationsControl.enable();
+    }
+  }
+
+   // Method used to display first value as trigger element in multi select field along with +1,+2 options 
+   displayFirstValue(value){
     if(value){
       if(value.length>0)
         return value[0].description;
@@ -405,24 +468,34 @@ setHiddenValues(){
     }
   }
 
-
-  disableEnableControls(value){
-    if(value){
-      this.governingBodiesControl.enable();
-      this.areasControl.enable();
-      this.topicsControl.enable();
-      this.industriesControl.enable();
-      this.productsControl.enable(); 
+  // Show  selected values as tool tip for multi select fields
+  getToolTipData(data){
+    var result = data.value;
+    if(result && result.length){
+      let msg = "";
+      result.forEach(res => {
+        msg+= res.description + ';';
+      })
+      return msg;
     }
-    else 
-    {
-      this.templateTypeControl.disable();
-      this.governingBodiesControl.disable();
-      this.areasControl.disable();
-      this.topicsControl.disable();
-      this.industriesControl.disable();
-      this.productsControl.disable(); 
-      this.contentTypesControl.disable();
+  }
+
+//Show selected values as tool tip for multi select Citations field
+  getToolTipForCFR(result){
+    if(result && result.length){
+      let msg = "";
+      result.forEach(res => {
+        msg+= res.cfrid + ';';
+      })
+      return msg;
+    }
+  }
+
+// Show selected values as tool tip for single select fields
+  getToolTipSingleValueData(data){
+    var result = data.value;
+    if(result){
+      return result.description;
     }
   }
   

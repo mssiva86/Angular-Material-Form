@@ -77,13 +77,14 @@
  .mat-tooltip {
      font-size: 16px !important;
      background-color:  rgb(85, 76, 94) !important;
+     max-width: 500px !important;
  }
 
  .mat-option {
      font-size: 12px !important;
  }
 
-.autocomplete-governingbody-class{
+.autocomplete-biginput-class{
     min-width: 100px;
     max-width: 500px;
     width: 100%;
@@ -111,3 +112,6 @@
      flex-direction: column;
 
   }
+
+
+  

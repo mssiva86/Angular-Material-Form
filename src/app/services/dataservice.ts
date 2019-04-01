@@ -38,6 +38,10 @@ export class DataService {
 
   } */
 
+  getCFRRelatedIDs(attr,arrayOfObjects) : Observable<any> {
+      return this.http.get(this.endpoint + attr + "/" + arrayOfObjects).pipe(map(this.extractData));
+  }
+
 
   getData(): Observable<any> {
     let areasRequest = this.http.get(this.endpoint + "areas").pipe(
@@ -48,7 +52,7 @@ export class DataService {
     let citationsRequest = this.http.get(this.endpoint + "citations").pipe(map(this.extractData));
     let filetypesRequest = this.http.get(this.endpoint + "fileTypes").pipe(map(this.extractData));
     let industriesRequest = this.http.get(this.endpoint + "industries").pipe(map(this.extractData));
-    let subAreasRequest = this.http.get(this.endpoint + "subAreas").pipe(map(this.extractData));
+    let topicsRequest = this.http.get(this.endpoint + "topics").pipe(map(this.extractData));
     let productRequest = this.http.get(this.endpoint + "products").pipe(map(this.extractData));
     let synonymsRequest = this.http.get(this.endpoint + "synonyms").pipe(map(this.extractData));
     let templateTypesRequest = this.http.get(this.endpoint + "templateTypes").pipe(map(this.extractData));
@@ -56,7 +60,7 @@ export class DataService {
     let contentTypesRequest = this.http.get(this.endpoint + "contentTypes").pipe(map(this.extractData));
     let geographiesRequest = this.http.get(this.endpoint + "geographies").pipe(map(this.extractData));
     return forkJoin([authorRequest, languageRequest, areasRequest,governingRequest, citationsRequest, filetypesRequest,
-       industriesRequest, subAreasRequest, productRequest, synonymsRequest, templateTypesRequest,
+       industriesRequest, topicsRequest, productRequest, synonymsRequest, templateTypesRequest,
       contentSubTypesRequest, contentTypesRequest, geographiesRequest]).pipe(catchError(error => of(error)));
   }  
 
