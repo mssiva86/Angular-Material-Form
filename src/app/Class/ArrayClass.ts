@@ -1,5 +1,3 @@
-import { DataService } from "../services/dataservice";
-
 
 export class ArrayClass {
 

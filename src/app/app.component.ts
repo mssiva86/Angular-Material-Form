@@ -46,9 +46,9 @@ export class AppComponent implements OnInit {
   private xmetalAuthor;
   private xmetalLanguage;
   private xmetalArea;
-  private xmetalTopics;
-  private xmetalCitations;
-  private xmetalTypes;
+  private xmetalTopic;
+  private xmetalCitation;
+  private xmetalType;
   private xmetalContentType;
   private xmetalGeography;
   private xmetalGoverningbody;
@@ -115,7 +115,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-  //  this.connectToXmetal();
+   this.connectToXmetal();
     this.getResults();
     this.autoCompleteSearchFn(); 
     this.disableEnableControls(false);
@@ -128,9 +128,9 @@ export class AppComponent implements OnInit {
     this.attrAuthor = xmlApp.Selection.ContainerNode.getAttribute("authoredby");
     this.attrLanguage = xmlApp.Selection.ContainerNode.getAttribute("language");
     this.attrArea = xmlApp.Selection.ContainerNode.getAttribute("area");
-    this.attrTopics = xmlApp.Selection.ContainerNode.getAttribute("topics");
+    this.attrTopics = xmlApp.Selection.ContainerNode.getAttribute("topic");
     this.attrCitations = xmlApp.Selection.ContainerNode.getAttribute("citations");
-    this.attrType = xmlApp.Selection.ContainerNode.getAttribute("contentsubtype");
+    this.attrType = xmlApp.Selection.ContainerNode.getAttribute("type");
     this.attrContentType = xmlApp.Selection.ContainerNode.getAttribute("contenttype");
     this.attrEffectivedate = xmlApp.Selection.ContainerNode.getAttribute("effectivedate");
     this.attrGeography = xmlApp.Selection.ContainerNode.getAttribute("geography");
@@ -189,6 +189,7 @@ export class AppComponent implements OnInit {
       this.helper.setMultipleSelectedValue(this.attrProduct,this.productsControl,this.products);
       this.helper.setMultipleSelectedValue(this.attrGoverningbody,this.governingBodiesControl,this.governingBodies);
       this.helper.setMultipleSelectedValue(this.attrIndustries,this.industriesControl,this.industries);
+      this.helper.setMultipleSelectedValue(this.attrCitations, this.citationsControl,this.citations);
 
       //set existing value for data fields from xmetal app.
       this.helper.setDateFieldValue(this.attrEffectivedate,this.effectiveDateControl);
@@ -240,11 +241,11 @@ setHiddenValues(){
   if(this.attrArea)
       this.xmetalArea = this.attrArea;
   if(this.attrTopics)
-      this.xmetalTopics = this.attrTopics;
+      this.xmetalTopic = this.attrTopics;
   if(this.attrCitations)
-      this.xmetalCitations = this.attrCitations;
+      this.xmetalCitation = this.attrCitations;
   if(this.attrType)
-      this.xmetalTypes = this.attrType;
+      this.xmetalType = this.attrType;
   if(this.attrContentType)
       this.xmetalContentType = this.attrContentType;
   if(this.attrGeography)
@@ -263,6 +264,8 @@ setHiddenValues(){
     this.xmetalTemplatetype = this.attrTemplatetype;
   if(this.attrAuthor)
       this.xmetalAuthor = this.attrAuthor;
+    if(this.attrCitations)
+       this.xmetalCitation = this.attrCitations;
 }
 
 
@@ -274,21 +277,38 @@ setHiddenValues(){
      if(result){
         if(attr == "author")
             this.xmetalAuthor = result.id;
-        else if(attr == "industry")
-            this.xmetalIndustries = result.id;
-        else if(attr == "product")
-            this.xmetalProduct = result.id;
         else if(attr == "promoted")
             this.xmetalPromoted = result;
         else if(attr == "mandatory")
             this.xmetalMandatory = result;
-        else if(attr == "governing")
-            this.xmetalGoverningbody = result.id;
         else if(attr == "contenttype")
             this.xmetalContentType = result.id;
         else if(attr == "geography")
             this.xmetalGeography = result.id;
+        else if(attr == "language")
+            this.xmetalLanguage = result.id;
+        else if(attr == "type")
+            this.xmetalType = result.id;
+        else if(attr == "templateType")
+            this.xmetalTemplatetype = result.id;
      }
+  }
+
+  
+  // set hidden field value of multiple Mat Select to get used in the XMETAL with getElementById()
+  setMultiValueForXmetalFields(data,attr){
+    var arrObj = data.value;
+    var ids = arrObj.map(i => i.id).join(" ");
+    if(attr == "topic")
+      this.xmetalTopic = ids;
+    else if(attr == "area")
+      this.xmetalArea = ids;
+    else if(attr == "product")
+      this.xmetalProduct = ids;
+    else if(attr == "governing")
+    this.xmetalGoverningbody = ids;
+    else if(attr == "industry")
+    this.xmetalIndustries = ids;
   }
 
   /* Set values for Content types and template types based on the Type field selection by the user*/
@@ -296,7 +316,7 @@ setHiddenValues(){
     var result = data.value;
     if(typeof result == 'object'){
 
-            this.xmetalTypes = result.id;
+            this.xmetalType = result.id;
             let contentTypeObj = this.contentTypes.find( o => o.id == result.contentId);
             let templateTypeObj = this.templateTypes.find( o => o.id == result.templateId );
             this.contentTypesControl.setValue(contentTypeObj);
@@ -305,24 +325,15 @@ setHiddenValues(){
             this.xmetalTemplatetype = templateTypeObj.id;
     }
     else{
-      this.contentTypesControl.setValue('');
-      this.xmetalContentType = '';
-      this.templateTypeControl.setValue('');
-      this.xmetalTemplatetype = '';
+      this.contentTypesControl.setValue(result);
+      this.xmetalContentType = result;
+      this.templateTypeControl.setValue(result);
+      this.xmetalTemplatetype = result;
     }
   }
 
 
 
-  // set hidden field value of multiple Mat Select to get used in the XMETAL with getElementById()
-  setMultiValueForXmetalFields(data,attr){
-    var arrObj = data.value;
-    var ids = arrObj.map(i => i.id).join(" ");
-    if(attr == "subarea")
-      this.xmetalTopics = ids;
-    else if(attr == "area")
-      this.xmetalArea = ids;
-  }
 
 
    
@@ -332,12 +343,11 @@ setHiddenValues(){
   // Set values for Topics,Area, Industry , Product and GoverningBodies automatically by selecting Citations
   setXmetalAndCitationRelatedFields(data){
     var result = data.value;
-    
     if(result && result.length){
   
        this.checkboxDisabled = true;
       // Set the xmetal value for citations
-    this.xmetalCitations = this.arrayClass.setMultivalues(result);
+    this.xmetalCitation = this.arrayClass.setMultivalues(result);
     
     let areasObjectArray : any = [];
     let governingBodiesObjArray : any = [];
@@ -406,22 +416,25 @@ setHiddenValues(){
           topicsObjectArray.push(this.topics.find( o=> o.id == topicId));
       });
       this.topicsControl.setValue(topicsObjectArray);
-      this.xmetalTopics = this.arrayClass.setMultivalues(topicsObjectArray);
+      this.xmetalTopic = this.arrayClass.setMultivalues(topicsObjectArray);
       this.loading = false;
     })
 
   }
   else{
-    this.areasControl.setValue('');
-    this.xmetalArea = '';
-    this.governingBodiesControl.setValue('');
-    this.xmetalGoverningbody = '';
-    this.industriesControl.setValue('');
-    this.xmetalIndustries = '';
-    this.productsControl.setValue('');
-    this.xmetalProduct = '';
-    this.topicsControl.setValue('');
-    this.xmetalTopics = '';
+
+    this.citationsControl.setValue(result);
+    this.xmetalCitation = result;
+    this.areasControl.setValue(result);
+    this.xmetalArea = result;
+    this.governingBodiesControl.setValue(result);
+    this.xmetalGoverningbody = result;
+    this.industriesControl.setValue(result);
+    this.xmetalIndustries = result;
+    this.productsControl.setValue(result);
+    this.xmetalProduct = result;
+    this.topicsControl.setValue(result);
+    this.xmetalTopic = result;
     this.checkboxDisabled = false;
   }
   }
@@ -449,14 +462,24 @@ setHiddenValues(){
       this.productsControl.disable(); 
       this.contentTypesControl.disable();
       this.citationsControl.enable();
+      this.checkboxDisabled = true;
     }
   }
 
    // Method used to display first value as trigger element in multi select field along with +1,+2 options 
    displayFirstValue(value){
+  
     if(value){
-      if(value.length>0)
-        return value[0].description;
+   if(value.length>1){
+     var desc = value[0].description;
+       if(desc.length>35)
+       return desc.substring(0,35) + "...";
+       else
+       return desc;
+   }
+   else if(value.length>0){
+     return value[0].description;
+   }
     }
   }
 
